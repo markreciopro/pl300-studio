@@ -8,7 +8,7 @@ st.set_page_config(
 )
 
 st.title("📊 Microsoft PL-300 Visual Exam Studio")
-st.markdown("Official Certification Practice Assessment — **Voice Reader, Memory Anchors, DAX Sandbox & 60-Question Bank**")
+st.markdown("Official Certification Practice Assessment — **Voice Reader, Memory Anchors, DAX Sandbox, Relationships & 60-Question Bank**")
 st.write("---")
 
 tab = st.sidebar.radio("Assessment Mode", [
@@ -16,6 +16,7 @@ tab = st.sidebar.radio("Assessment Mode", [
     "🆓 Microsoft Free Practice Assessment Hub", 
     "⏱️ Official Timed Exam Simulator (100 Min)", 
     "⚡ Interactive DAX Sandbox & Code Quiz", 
+    "🔗 Relationships, Cardinality & Filter Quiz", 
     "Exam Blueprint & Skill Weights"
 ])
 
@@ -171,10 +172,10 @@ questions = [
         "question": "Which visual is best suited for displaying hierarchical proportions as a set of nested rectangles?",
         "keywords": ["hierarchical proportions", "Treemap"],
         "muscle_memory": "👆 **Muscle Memory Action:** Visualizations pane -> Select **Treemap** -> Set Group and Values.",
-        "mnemonic": "🔑 **Memory Anchor:** *'Treemaps size by rectangles'* — Proportional hierarchical comparison.",
+        "mnemonic": "🔑 **Memory Anchor:** *'Trees have nested blocks'* — Treemaps represent hierarchical data using nested rectangles.",
         "options": ["Treemap", "Line chart", "KPI", "Slicer"],
         "answer": "Treemap",
-        "explanation": "Treemaps display hierarchical data using nested rectangles proportional to their numerical values.",
+        "explanation": "A treemap visualization displays hierarchical data as a set of nested rectangles sized by values.",
         "video_url": "http://www.youtube.com/watch?v=a35rFVTsuh4"
     },
     {
@@ -766,7 +767,7 @@ questions = [
         "id": 58,
         "type": "Multiple Choice",
         "domain": "Visualize and Analyze (25-30%)",
-        "question": "You want report consumers to dynamically switch between viewing Sales Amount, Profit Margin, and Quantity on a bar chart using a dropdown selection. What feature should you build?",
+        "question": "You want report users to dynamically switch between viewing Sales Amount, Profit Margin, and Quantity on a bar chart using a dropdown selection. What feature should you build?",
         "keywords": ["dynamically switch between metrics", "Fields parameter"],
         "muscle_memory": "👆 **Muscle Memory Action:** Modeling tab -> New Parameter -> **Fields** -> Drag multiple measures into list -> Drop parameter slicer onto canvas.",
         "mnemonic": "🔑 **Memory Anchor:** *'Fields parameters swap metrics instantly'* — Allows users to toggle measures inside visuals dynamically.",
@@ -969,15 +970,6 @@ elif tab == "⏱️ Official Timed Exam Simulator (100 Min)":
             st.success("🎉 **PASS** — Met the 70% threshold! You are well-prepared for the real exam.")
         else:
             st.error("⚠️ **NOT PASSING** — Below the 70% Microsoft passing threshold.")
-            
-            st.markdown("---")
-            st.subheader("🎯 Personalized Improvement Recommendations")
-            st.markdown("""
-            To boost your score above 70%, focus heavily on these high-yield study actions:
-            1. **Master Power Query Transformations (Q41–Q46, Q53, Q57):** Review rules for *Referencing vs. Duplicating* tables, *Keep Errors*, *Query Folding*, and *Merge Columns*.
-            2. **Star Schema, Measures & Storage Modes (Q25–Q32, Q51, Q52, Q56, Q60):** Drill down into *Dual storage mode* for dimension tables, *Measures vs Calculated Columns*, and why *Mark as Date Table* unlocks time intelligence.
-            3. **Security & Administration (Q9, Q33, Q54, Q59):** Memorize how `USERPRINCIPALNAME()` powers dynamic RLS and how Deployment Pipelines and Admin roles operate.
-            """)
 
 elif tab == "⚡ Interactive DAX Sandbox & Code Quiz":
     st.subheader("⚡ Interactive DAX Formula Sandbox & Syntax Builder")
@@ -1027,74 +1019,72 @@ elif tab == "⚡ Interactive DAX Sandbox & Code Quiz":
     st.code(func_data["example"], language="sql")
     st.markdown(func_data["anchor"])
 
+elif tab == "🔗 Relationships, Cardinality & Filter Quiz":
+    st.subheader("🔗 Power BI Relationships, Cardinality & Cross-Filter Sandbox")
+    st.markdown("Master how star schema models connect lookup tables (`1`) to transactional fact tables (`*`), and how filter directions (`Single` vs `Both`) propagate context.")
     st.write("---")
-    st.subheader("🧠 DAX Fill-in-the-Blank Challenge")
-    st.markdown("Test your formula syntax memory:")
 
-    if selected_func == "CALCULATE()":
-        st.markdown("**Question:** You want to calculate total sales specifically for the 'Electronics' category. Which formula structure is correct?")
-        ans = st.radio("Select option:", [
-            "CALCULATE([Total Sales], Products[Category] = 'Electronics')",
-            "FILTER([Total Sales], Products[Category] = 'Electronics')",
-            "RELATED([Total Sales], Products[Category] = 'Electronics')"
+    rel_topic = st.selectbox("Select Modeling Concept:", [
+        "Cardinality: Many-to-One (*:1)",
+        "Cross-Filter Direction: Single vs. Both",
+        "Active vs. Inactive Relationships"
+    ])
+
+    if rel_topic == "Cardinality: Many-to-One (*:1)":
+        st.markdown("### 📌 Many-to-One (*:1) Relationships")
+        st.write("In a standard star schema (like connecting `fact_competitor_market` to `dim_properties` on `Submarket` or `Property_ID`), the dimension table contains unique keys (`1`), while the fact table contains repeating transaction records (`*`).")
+        st.info("🔑 **Memory Anchor:** *'One dimension, many facts'* — Filters always flow automatically from the **One (1)** side to the **Many (*)** side.")
+        
+        st.write("---")
+        st.markdown("### 🧠 Quick Knowledge Check")
+        ans = st.radio("Question: When connecting a lookup table to a fact table, what is the recommended cardinality for optimal performance?", [
+            "Many-to-One (*:1) from dimension to fact",
+            "Many-to-Many (*:*) bidirectional on all tables",
+            "One-to-One (1:1) with identical columns"
         ], index=None)
         if ans:
-            if ans.startswith("CALCULATE"):
-                st.success("✅ **Correct!** CALCULATE modifies the filter context to evaluate [Total Sales] for Electronics.")
+            if ans.startswith("Many-to-One"):
+                st.success("✅ **Correct!** Dimension lookup tables should be on the '1' side pointing to the fact table on the '*' side.")
             else:
-                st.error("❌ **Incorrect.** CALCULATE is required to apply new filter conditions over measures.")
+                st.error("❌ **Incorrect.** Star schemas rely on Many-to-One (*:1) relationships from dimension to fact.")
 
-    elif selected_func == "FILTER()":
-        st.markdown("**Question:** When should you use the `FILTER` function within `CALCULATE`?")
-        ans = st.radio("Select option:", [
-            "Whenever you want to replace standard table relationships",
-            "When you need to apply complex row-by-row expressions or return a modified table subset",
-            "To mark a table as a date table for time intelligence"
+    elif rel_topic == "Cross-Filter Direction: Single vs. Both":
+        st.markdown("### 📌 Cross-Filter Direction (`Single` vs. `Both`)")
+        st.write("• **Single:** Filters flow strictly from the lookup table to the related fact table. This maximizes VertiPaq engine query speed and prevents ambiguity.")
+        st.write("• **Both (Bidirectional):** Allows filters to propagate across tables in both directions (e.g., filtering a fact table can filter a connected lookup table).")
+        st.warning("⚠️ **Exam Warning:** Use Bidirectional filtering sparingly! It introduces performance overhead and can create unexpected ambiguity in complex models.")
+        st.info("🔑 **Memory Anchor:** *'Single direction flows fast; Both directions risk ambiguity'*.")
+
+        st.write("---")
+        st.markdown("### 🧠 Quick Knowledge Check")
+        ans = st.radio("Question: What is the primary drawback of using bidirectional cross-filtering across all model relationships?", [
+            "It increases query processing overhead and can cause filter ambiguity",
+            "It completely disables Time Intelligence calculations",
+            "It prevents you from publishing reports to the Power BI Service"
         ], index=None)
         if ans:
-            if ans.startswith("When you need"):
-                st.success("✅ **Correct!** FILTER evaluates row-by-row over a table to return a filtered subset.")
+            if ans.startswith("It increases query"):
+                st.success("✅ **Correct!** Bidirectional filters add computational overhead and ambiguity risks.")
             else:
-                st.error("❌ **Incorrect.** FILTER evaluates row conditions iteratively inside CALCULATE.")
+                st.error("❌ **Incorrect.** Bidirectional filtering primarily impacts query performance and ambiguity.")
 
-    elif selected_func == "RELATED()":
-        st.markdown("**Question:** From which side of a relationship can you invoke the `RELATED` function?")
-        ans = st.radio("Select option:", [
-            "From the Many side (looking up to the One side)",
-            "From the One side (looking down to the Many side)",
-            "Only between disconnected tables"
+    elif rel_topic == "Active vs. Inactive Relationships":
+        st.markdown("### 📌 Active vs. Inactive Relationships")
+        st.write("Power BI allows only **one active relationship** between any two tables at a time. If you have multiple date connections (e.g., `OrderDate` and `ShipDate`), additional relationships are rendered as **inactive (dashed lines)**.")
+        st.info("🔑 **Memory Anchor:** *'USERELATIONSHIP activates inactive paths in DAX'*.")
+        
+        st.write("---")
+        st.markdown("### 🧠 Quick Knowledge Check")
+        ans = st.radio("Question: How do you evaluate a measure using an inactive relationship in a DAX formula?", [
+            "Using the `USERELATIONSHIP()` function inside CALCULATE",
+            "By setting cross-filter direction to Both",
+            "By marking the table as an active date table"
         ], index=None)
         if ans:
-            if ans.startswith("From the Many side"):
-                st.success("✅ **Correct!** RELATED requires row context on the Many side to traverse up to the parent lookup table.")
+            if ans.startswith("Using the `USERELATIONSHIP`"):
+                st.success("✅ **Correct!** USERELATIONSHIP temporarily activates an inactive relationship for a specific measure calculation.")
             else:
-                st.error("❌ **Incorrect.** RELATED travels from the Many side to the One side.")
-
-    elif selected_func == "TOTALYTD()":
-        st.markdown("**Question:** What is a mandatory prerequisite for `TOTALYTD` to calculate properly?")
-        ans = st.radio("Select option:", [
-            "A marked Date table with a contiguous range of dates",
-            "Bidirectional cross-filtering enabled on all fact tables",
-            "Storing dates as text strings in Power Query"
-        ], index=None)
-        if ans:
-            if ans.startswith("A marked Date table"):
-                st.success("✅ **Correct!** Time intelligence functions rely on a contiguous Date table marked explicitly in the model.")
-            else:
-                st.error("❌ **Incorrect.** Time intelligence requires a marked date table.")
-
-    elif selected_func == "USERPRINCIPALNAME()":
-        st.markdown("**Question:** What security feature relies on `USERPRINCIPALNAME()` to filter data dynamically?")
-        ans = st.radio("Select option:", [
-            "Row-Level Security (RLS)",
-            "Performance Analyzer caching",
-            "Power Query folding rules"
-        ], index=None)
-        if ans:
-            if ans.startswith("Row-Level Security"):
-                st.success("✅ **Correct!** RLS uses USERPRINCIPALNAME() to restrict data rows per logged-in user.")
-            else:
-                st.error("❌ **Incorrect.** USERPRINCIPALNAME() is used for dynamic Row-Level Security.")
+                st.error("❌ **Incorrect.** Inactive relationships require USERELATIONSHIP() in DAX.")
 
 elif tab == "Exam Blueprint & Skill Weights":
     st.subheader("📌 Official Microsoft PL-300 Exam Domains")
