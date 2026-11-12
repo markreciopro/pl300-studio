@@ -16,7 +16,7 @@ tab = st.sidebar.radio("Assessment Mode", [
     "🆓 Microsoft Free Practice Assessment Hub", 
     "⏱️ Official Timed Exam Simulator (100 Min)", 
     "⚡ Interactive DAX Sandbox & Code Quiz", 
-    "🔗 Relationships, Cardinality & Filter Quiz", 
+    "🔗 Relationships, Cardinality & Filter Sandbox", 
     "Exam Blueprint & Skill Weights"
 ])
 
@@ -1019,72 +1019,91 @@ elif tab == "⚡ Interactive DAX Sandbox & Code Quiz":
     st.code(func_data["example"], language="sql")
     st.markdown(func_data["anchor"])
 
-elif tab == "🔗 Relationships, Cardinality & Filter Quiz":
+elif tab == "🔗 Relationships, Cardinality & Filter Sandbox":
     st.subheader("🔗 Power BI Relationships, Cardinality & Cross-Filter Sandbox")
-    st.markdown("Master how star schema models connect lookup tables (`1`) to transactional fact tables (`*`), and how filter directions (`Single` vs `Both`) propagate context.")
+    st.markdown("Master star schema connectivity (`1` to `*`), filter propagation (`Single` vs `Both`), and how Power BI evaluates joins between fact and dimension tables.")
     st.write("---")
 
-    rel_topic = st.selectbox("Select Modeling Concept:", [
-        "Cardinality: Many-to-One (*:1)",
-        "Cross-Filter Direction: Single vs. Both",
-        "Active vs. Inactive Relationships"
+    rel_topic = st.selectbox("Select Modeling & Relationship Concept:", [
+        "🏗️ Star Schema Example (`dim_properties` to `fact_competitor_market`)",
+        "🔀 Cardinality: Many-to-One (*:1)",
+        "🔄 Cross-Filter Direction: Single vs. Both",
+        "⏳ Active vs. Inactive Relationships"
     ])
 
-    if rel_topic == "Cardinality: Many-to-One (*:1)":
-        st.markdown("### 📌 Many-to-One (*:1) Relationships")
-        st.write("In a standard star schema (like connecting `fact_competitor_market` to `dim_properties` on `Submarket` or `Property_ID`), the dimension table contains unique keys (`1`), while the fact table contains repeating transaction records (`*`).")
-        st.info("🔑 **Memory Anchor:** *'One dimension, many facts'* — Filters always flow automatically from the **One (1)** side to the **Many (*)** side.")
+    if rel_topic == "🏗️ Star Schema Example (`dim_properties` to `fact_competitor_market`)":
+        st.markdown("### 🏢 Real-World Star Schema Example")
+        st.write("In hospitality and real estate analytics, your data model is built around a star schema connecting unique property dimensions to daily competitor market facts.")
         
-        st.write("---")
+        col1, col2 = st.columns(2)
+        with col1:
+            st.markdown("#### 📁 Lookup Table (`dim_properties`)")
+            st.markdown("**Cardinality Side:** `1` (Unique)")
+            st.dataframe(pd.DataFrame({
+                "Property_ID": ["P1001", "P1002", "P1003"],
+                "Submarket": ["Summerlin", "Henderson", "North Las Vegas"],
+                "Region": ["West", "South", "North"]
+            }))
+        with col2:
+            st.markdown("#### 📊 Fact Table (`fact_competitor_market`)")
+            st.markdown("**Cardinality Side:** `*` (Repeating)")
+            st.dataframe(pd.DataFrame({
+                "Comp_ID": ["C901", "C902", "C903"],
+                "Submarket": ["Summerlin", "Henderson", "North Las Vegas"],
+                "Competitor_Avg_Rent": [2120, 2400, 1820]
+            }))
+        
+        st.info("🔑 **Memory Anchor:** *'Dimension tables provide filters (1) to Fact tables (*)'* — Joining on `Submarket` or `Property_ID` ensures slicers filter operational rent metrics instantly.")
+
+    elif rel_topic == "🔀 Cardinality: Many-to-One (*:1)":
+        st.markdown("### 📌 Many-to-One (*:1) Relationship Breakdown")
+        st.write("When you open the **Edit relationship** window in Power BI Desktop, you configure how two tables relate:")
+        st.markdown("""
+        * **From table (Fact):** `fact_competitor_market` (Contains multiple daily records per submarket or property).
+        * **To table (Dimension):** `dim_properties` (Contains unique property listings).
+        * **Cardinality:** `Many to one (*:1)` — Many rows in the fact table map to a single unique row in the dimension table.
+        """)
+        st.markdown("---")
         st.markdown("### 🧠 Quick Knowledge Check")
-        ans = st.radio("Question: When connecting a lookup table to a fact table, what is the recommended cardinality for optimal performance?", [
-            "Many-to-One (*:1) from dimension to fact",
-            "Many-to-Many (*:*) bidirectional on all tables",
-            "One-to-One (1:1) with identical columns"
+        ans = st.radio("Question: In a standard Many-to-One (*:1) relationship, which direction do filters naturally propagate?", [
+            "From the '1' side (Dimension) to the '*' side (Fact)",
+            "From the '*' side (Fact) to the '1' side (Dimension)",
+            "Bidirectionally across all columns simultaneously"
         ], index=None)
         if ans:
-            if ans.startswith("Many-to-One"):
-                st.success("✅ **Correct!** Dimension lookup tables should be on the '1' side pointing to the fact table on the '*' side.")
+            if ans.startswith("From the '1' side"):
+                st.success("✅ **Correct!** Filters flow automatically from the lookup dimension table to the fact table.")
             else:
-                st.error("❌ **Incorrect.** Star schemas rely on Many-to-One (*:1) relationships from dimension to fact.")
+                st.error("❌ **Incorrect.** Standard star schema relationships propagate filters from 1 to *.")
 
-    elif rel_topic == "Cross-Filter Direction: Single vs. Both":
+    elif rel_topic == "🔄 Cross-Filter Direction: Single vs. Both":
         st.markdown("### 📌 Cross-Filter Direction (`Single` vs. `Both`)")
-        st.write("• **Single:** Filters flow strictly from the lookup table to the related fact table. This maximizes VertiPaq engine query speed and prevents ambiguity.")
-        st.write("• **Both (Bidirectional):** Allows filters to propagate across tables in both directions (e.g., filtering a fact table can filter a connected lookup table).")
-        st.warning("⚠️ **Exam Warning:** Use Bidirectional filtering sparingly! It introduces performance overhead and can create unexpected ambiguity in complex models.")
+        st.markdown("""
+        | Setting | Behavior | Performance & Best Practice |
+        | :--- | :--- | :--- |
+        | **Single** | Filters flow strictly from Lookup (`1`) to Fact (`*`). | **Recommended.** Maximizes VertiPaq engine speed and prevents ambiguity. |
+        | **Both (Bidirectional)** | Filters propagate in both directions (Fact can filter Lookup). | **Use with caution.** Adds query overhead and risk of ambiguous paths. |
+        """)
         st.info("🔑 **Memory Anchor:** *'Single direction flows fast; Both directions risk ambiguity'*.")
-
-        st.write("---")
-        st.markdown("### 🧠 Quick Knowledge Check")
-        ans = st.radio("Question: What is the primary drawback of using bidirectional cross-filtering across all model relationships?", [
-            "It increases query processing overhead and can cause filter ambiguity",
-            "It completely disables Time Intelligence calculations",
-            "It prevents you from publishing reports to the Power BI Service"
-        ], index=None)
-        if ans:
-            if ans.startswith("It increases query"):
-                st.success("✅ **Correct!** Bidirectional filters add computational overhead and ambiguity risks.")
-            else:
-                st.error("❌ **Incorrect.** Bidirectional filtering primarily impacts query performance and ambiguity.")
-
-    elif rel_topic == "Active vs. Inactive Relationships":
-        st.markdown("### 📌 Active vs. Inactive Relationships")
-        st.write("Power BI allows only **one active relationship** between any two tables at a time. If you have multiple date connections (e.g., `OrderDate` and `ShipDate`), additional relationships are rendered as **inactive (dashed lines)**.")
-        st.info("🔑 **Memory Anchor:** *'USERELATIONSHIP activates inactive paths in DAX'*.")
         
-        st.write("---")
+        st.markdown("---")
         st.markdown("### 🧠 Quick Knowledge Check")
-        ans = st.radio("Question: How do you evaluate a measure using an inactive relationship in a DAX formula?", [
-            "Using the `USERELATIONSHIP()` function inside CALCULATE",
-            "By setting cross-filter direction to Both",
-            "By marking the table as an active date table"
+        ans = st.radio("Question: You notice your report queries are running slowly after enabling bidirectional filtering across multiple tables. What is the primary cause?", [
+            "Increased query processing overhead from two-way filter propagation",
+            "Power BI automatically switching the dataset to DirectQuery mode",
+            "Disabling row-level security functions"
         ], index=None)
         if ans:
-            if ans.startswith("Using the `USERELATIONSHIP`"):
-                st.success("✅ **Correct!** USERELATIONSHIP temporarily activates an inactive relationship for a specific measure calculation.")
+            if ans.startswith("Increased query"):
+                st.success("✅ **Correct!** Bidirectional filters increase computational overhead on the engine.")
             else:
-                st.error("❌ **Incorrect.** Inactive relationships require USERELATIONSHIP() in DAX.")
+                st.error("❌ **Incorrect.** Bidirectional filters impact processing overhead and performance.")
+
+    elif rel_topic == "⏳ Active vs. Inactive Relationships":
+        st.markdown("### 📌 Active vs. Inactive Relationships")
+        st.write("Power BI permits only **one active relationship** between any two tables. If you have multiple date foreign keys (e.g., `OrderDate` and `ShipDate`), additional relationships are represented as **dashed inactive lines**.")
+        st.code("Total Shipped Sales = CALCULATE([Total Sales], USERELATIONSHIP('Calendar'[Date], Sales[ShipDate]))", language="sql")
+        st.info("🔑 **Memory Anchor:** *'USERELATIONSHIP activates inactive dashed paths in DAX'*.")
 
 elif tab == "Exam Blueprint & Skill Weights":
     st.subheader("📌 Official Microsoft PL-300 Exam Domains")
