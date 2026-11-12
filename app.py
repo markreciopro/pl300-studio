@@ -8,14 +8,14 @@ st.set_page_config(
 )
 
 st.title("📊 Microsoft PL-300 Visual Exam Studio")
-st.markdown("Official Certification Practice Assessment — **Voice Reader, Memory Anchors, 60-Question Bank & Personalized Recommendations**")
+st.markdown("Official Certification Practice Assessment — **Voice Reader, Memory Anchors, DAX Sandbox & 60-Question Bank**")
 st.write("---")
 
 tab = st.sidebar.radio("Assessment Mode", [
     "Interactive Practice Hub (All 60 + Voice)", 
     "🆓 Microsoft Free Practice Assessment Hub", 
     "⏱️ Official Timed Exam Simulator (100 Min)", 
-    "DAX & Power Query Flashcards", 
+    "⚡ Interactive DAX Sandbox & Code Quiz", 
     "Exam Blueprint & Skill Weights"
 ])
 
@@ -766,7 +766,7 @@ questions = [
         "id": 58,
         "type": "Multiple Choice",
         "domain": "Visualize and Analyze (25-30%)",
-        "question": "You want to enable report consumers to dynamically switch between viewing Sales Amount, Profit Margin, and Quantity on a bar chart using a dropdown selection. What feature should you build?",
+        "question": "You want report consumers to dynamically switch between viewing Sales Amount, Profit Margin, and Quantity on a bar chart using a dropdown selection. What feature should you build?",
         "keywords": ["dynamically switch between metrics", "Fields parameter"],
         "muscle_memory": "👆 **Muscle Memory Action:** Modeling tab -> New Parameter -> **Fields** -> Drag multiple measures into list -> Drop parameter slicer onto canvas.",
         "mnemonic": "🔑 **Memory Anchor:** *'Fields parameters swap metrics instantly'* — Allows users to toggle measures inside visuals dynamically.",
@@ -777,8 +777,7 @@ questions = [
     },
     {
         "id": 59,
-        "type": "Multiple Choice",
-        "domain": "Manage and Secure (15-20%)",
+        "type": "Manage and Secure (15-20%)",
         "question": "Which administrative role in Power BI allows a user to manage tenant-wide settings, user licenses, and workspace audits without needing access to individual report content?",
         "keywords": ["tenant-wide settings", "Power BI Administrator"],
         "muscle_memory": "👆 **Muscle Memory Action:** Microsoft 365 Admin Center / Power BI Admin Portal -> Tenant settings -> Assign Power BI Administrator role.",
@@ -815,7 +814,6 @@ if tab == "Interactive Practice Hub (All 60 + Voice)":
         st.markdown(f"### Q{q['id']} — [{q['domain']}] 🏷️ *({q['type']})*")
         st.markdown(q['question'])
         
-        # Safe JSON-escaped Web Speech API Trigger
         safe_q_text = q['question'].replace("'", "\\'").replace('"', '\\"')
         speech_html = f"""
         <script>
@@ -952,7 +950,6 @@ elif tab == "⏱️ Official Timed Exam Simulator (100 Min)":
             else:
                 st.markdown(f"**Q{q['id']} [{q['domain']}]: ❌ Incorrect**")
             
-            # Show question text and choices
             st.markdown(f"> *{q['question']}*")
             if isinstance(correct_ans, list):
                 st.markdown(f"   * **Your Answer:** `{user_ans}`")
@@ -961,7 +958,6 @@ elif tab == "⏱️ Official Timed Exam Simulator (100 Min)":
                 st.markdown(f"   * **Your Answer:** `{user_ans}`")
                 st.markdown(f"   * **Correct Answer:** `{correct_ans}`")
             
-            # Show Memory Anchor and Explanation
             st.markdown(f"   * {q['mnemonic']}")
             st.markdown(f"   * 💡 *Explanation:* {q['explanation']}")
             st.write("---")
@@ -978,24 +974,127 @@ elif tab == "⏱️ Official Timed Exam Simulator (100 Min)":
             st.subheader("🎯 Personalized Improvement Recommendations")
             st.markdown("""
             To boost your score above 70%, focus heavily on these high-yield study actions:
-            1. **Master Power Query Transformations (Q41–Q46, Q53, Q57):** Review rules for *Referencing vs. Duplicating* tables, *Keep Errors*, *Query Folding*, and *Merge Columns*. These make up 25-30% of the exam.
+            1. **Master Power Query Transformations (Q41–Q46, Q53, Q57):** Review rules for *Referencing vs. Duplicating* tables, *Keep Errors*, *Query Folding*, and *Merge Columns*.
             2. **Star Schema, Measures & Storage Modes (Q25–Q32, Q51, Q52, Q56, Q60):** Drill down into *Dual storage mode* for dimension tables, *Measures vs Calculated Columns*, and why *Mark as Date Table* unlocks time intelligence.
-            3. **Security & Administration (Q9, Q33, Q54, Q59):** Memorize how `USERPRINCIPALNAME()` powers dynamic RLS and how Deployment Pipelines and Admin roles operate in Power BI Service.
-            4. **Retake Practice Hub Mode:** Use the **Interactive Practice Hub** tab where you can click **Read Question Aloud**, review **Muscle Memory actions**, and watch the concept videos for every missed question!
+            3. **Security & Administration (Q9, Q33, Q54, Q59):** Memorize how `USERPRINCIPALNAME()` powers dynamic RLS and how Deployment Pipelines and Admin roles operate.
             """)
 
-elif tab == "DAX & Power Query Flashcards":
-    st.subheader("⚡ High-Yield Microsoft Exam Flashcards")
-    flashcards = {
-        "CALCULATE()": "🧠 **Anchor:** Modifies filter context. Core workhorse of DAX.",
-        "Mark as Date Table": "🧠 **Anchor:** Mandatory for time intelligence functions (SAMEPERIODLASTYEAR).",
-        "Merge vs. Append": "🧠 **Anchor:** Merge = SQL Join (columns). Append = SQL Union (rows).",
-        "UserPrincipalName()": "🧠 **Anchor:** Dynamic RLS function filtering data by logged-in user email.",
-        "Query Folding": "🧠 **Anchor:** Pushing Power Query steps back to source database for speed."
+elif tab == "⚡ Interactive DAX Sandbox & Code Quiz":
+    st.subheader("⚡ Interactive DAX Formula Sandbox & Syntax Builder")
+    st.markdown("Test and inspect how core DAX functions evaluate filter context, relationships, and time intelligence.")
+    st.write("---")
+
+    dax_snippets = {
+        "CALCULATE()": {
+            "syntax": "CALCULATE(<Expression>, <Filter1>, <Filter2>, ...)",
+            "purpose": "Evaluates an expression in a context modified by specified filters.",
+            "example": "Total Sales US = CALCULATE([Total Sales], Customers[Country] = 'United States')",
+            "anchor": "🧠 **Memory Anchor:** CALCULATE is the most powerful function in DAX because it overrides existing filter context."
+        },
+        "FILTER()": {
+            "syntax": "FILTER(<table>, <filter_condition>)",
+            "purpose": "Returns a table that represents a subset of another table or expression.",
+            "example": "High Value Orders = CALCULATE([Total Sales], FILTER(Sales, Sales[Amount] > 1000))",
+            "anchor": "🧠 **Memory Anchor:** FILTER iterates row-by-row over tables. Use it inside CALCULATE when complex row conditions are needed."
+        },
+        "RELATED()": {
+            "syntax": "RELATED(<column>)",
+            "purpose": "Returns a related value from another table in a many-to-one relationship.",
+            "example": "Customer Region = RELATED(Regions[RegionName])",
+            "anchor": "🧠 **Memory Anchor:** RELATED crosses from the Many side to the One side of a relationship (requires row context)."
+        },
+        "TOTALYTD()": {
+            "syntax": "TOTALYTD(<expression>, <dates>[, <year_end_date>][, <filter>])",
+            "purpose": "Evaluates the year-to-date value of the expression in the current context.",
+            "example": "Sales YTD = TOTALYTD([Total Sales], 'Calendar'[Date])",
+            "anchor": "🧠 **Memory Anchor:** Time intelligence functions require a marked Date table with contiguous dates to calculate correctly."
+        },
+        "USERPRINCIPALNAME()": {
+            "syntax": "USERPRINCIPALNAME()",
+            "purpose": "Returns the user principal name (UPN) of the currently logged-in user.",
+            "example": "Manager RLS = [ManagerEmail] = USERPRINCIPALNAME()",
+            "anchor": "🧠 **Memory Anchor:** Essential for dynamic Row-Level Security (RLS) matching Entra ID login credentials."
+        }
     }
-    term = st.selectbox("Select Concept:", list(flashcards.keys()))
-    if st.button("Reveal Memory Anchor"):
-        st.success(flashcards[term])
+
+    selected_func = st.selectbox("Select DAX Function to Inspect:", list(dax_snippets.keys()))
+    func_data = dax_snippets[selected_func]
+
+    st.markdown(f"### 📌 Function: `{selected_func}`")
+    st.code(func_data["syntax"], language="sql")
+    st.write(f"**Purpose:** {func_data['purpose']}")
+    st.markdown(f"**Example Usage:**")
+    st.code(func_data["example"], language="sql")
+    st.markdown(func_data["anchor"])
+
+    st.write("---")
+    st.subheader("🧠 DAX Fill-in-the-Blank Challenge")
+    st.markdown("Test your formula syntax memory:")
+
+    if selected_func == "CALCULATE()":
+        st.markdown("**Question:** You want to calculate total sales specifically for the 'Electronics' category. Which formula structure is correct?")
+        ans = st.radio("Select option:", [
+            "CALCULATE([Total Sales], Products[Category] = 'Electronics')",
+            "FILTER([Total Sales], Products[Category] = 'Electronics')",
+            "RELATED([Total Sales], Products[Category] = 'Electronics')"
+        ], index=None)
+        if ans:
+            if ans.startswith("CALCULATE"):
+                st.success("✅ **Correct!** CALCULATE modifies the filter context to evaluate [Total Sales] for Electronics.")
+            else:
+                st.error("❌ **Incorrect.** CALCULATE is required to apply new filter conditions over measures.")
+
+    elif selected_func == "FILTER()":
+        st.markdown("**Question:** When should you use the `FILTER` function within `CALCULATE`?")
+        ans = st.radio("Select option:", [
+            "Whenever you want to replace standard table relationships",
+            "When you need to apply complex row-by-row expressions or return a modified table subset",
+            "To mark a table as a date table for time intelligence"
+        ], index=None)
+        if ans:
+            if ans.startswith("When you need"):
+                st.success("✅ **Correct!** FILTER evaluates row-by-row over a table to return a filtered subset.")
+            else:
+                st.error("❌ **Incorrect.** FILTER evaluates row conditions iteratively inside CALCULATE.")
+
+    elif selected_func == "RELATED()":
+        st.markdown("**Question:** From which side of a relationship can you invoke the `RELATED` function?")
+        ans = st.radio("Select option:", [
+            "From the Many side (looking up to the One side)",
+            "From the One side (looking down to the Many side)",
+            "Only between disconnected tables"
+        ], index=None)
+        if ans:
+            if ans.startswith("From the Many side"):
+                st.success("✅ **Correct!** RELATED requires row context on the Many side to traverse up to the parent lookup table.")
+            else:
+                st.error("❌ **Incorrect.** RELATED travels from the Many side to the One side.")
+
+    elif selected_func == "TOTALYTD()":
+        st.markdown("**Question:** What is a mandatory prerequisite for `TOTALYTD` to calculate properly?")
+        ans = st.radio("Select option:", [
+            "A marked Date table with a contiguous range of dates",
+            "Bidirectional cross-filtering enabled on all fact tables",
+            "Storing dates as text strings in Power Query"
+        ], index=None)
+        if ans:
+            if ans.startswith("A marked Date table"):
+                st.success("✅ **Correct!** Time intelligence functions rely on a contiguous Date table marked explicitly in the model.")
+            else:
+                st.error("❌ **Incorrect.** Time intelligence requires a marked date table.")
+
+    elif selected_func == "USERPRINCIPALNAME()":
+        st.markdown("**Question:** What security feature relies on `USERPRINCIPALNAME()` to filter data dynamically?")
+        ans = st.radio("Select option:", [
+            "Row-Level Security (RLS)",
+            "Performance Analyzer caching",
+            "Power Query folding rules"
+        ], index=None)
+        if ans:
+            if ans.startswith("Row-Level Security"):
+                st.success("✅ **Correct!** RLS uses USERPRINCIPALNAME() to restrict data rows per logged-in user.")
+            else:
+                st.error("❌ **Incorrect.** USERPRINCIPALNAME() is used for dynamic Row-Level Security.")
 
 elif tab == "Exam Blueprint & Skill Weights":
     st.subheader("📌 Official Microsoft PL-300 Exam Domains")
